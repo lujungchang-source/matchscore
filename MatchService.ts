@@ -7,6 +7,7 @@ import { updateMatchResult as updateMatchResultUtil, UpdateMatchResultException 
 
 // Event enum with numeric values
 export enum Event {
+  None = 0,
   HomeGoal = 1,
   AwayGoal = 2,
   CancelHomeGoal = 3,
@@ -16,7 +17,7 @@ export enum Event {
 
 export class MatchService {
   // Private member to store mock match data
-  private mockMatchData: string = "HHA;A";
+  private mockMatchData: string = "";
 
   /**
    * Query match result by match ID

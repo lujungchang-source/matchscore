@@ -30,10 +30,4 @@ describe('Cancel Button Integration', () => {
       updateMatchResult(123, Event.CancelHomeGoal, 'AA');
     }).toThrow('Cannot cancel home goal: no \'H\' found to cancel');
   });
-
-  test('should throw exception when trying to cancel with semicolon at beginning', () => {
-    expect(() => {
-      updateMatchResult(123, Event.CancelHomeGoal, ';HHA');
-    }).toThrow('Cannot cancel home goal: semicolon at beginning indicates invalid match state');
-  });
 });

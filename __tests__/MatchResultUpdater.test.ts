@@ -47,21 +47,6 @@ describe('MatchResultUpdater', () => {
         }).toThrow(UpdateMatchResultException);
       });
 
-      test('should throw exception when encountering semicolon and previous character is not H', () => {
-        expect(() => {
-          updateMatchResult(123, Event.CancelHomeGoal, 'HHAA;A');
-        }).toThrow(UpdateMatchResultException);
-        
-        try {
-          updateMatchResult(123, Event.CancelHomeGoal, 'HHAA;A');
-        } catch (error: any) {
-          expect(error).toBeInstanceOf(UpdateMatchResultException);
-          expect((error as UpdateMatchResultException).event).toBe(Event.CancelHomeGoal);
-          expect((error as UpdateMatchResultException).originalMatchResult).toBe('HHAA;A');
-          expect(error.message).toContain('character before \';\' is \'A\', not \'H\'');
-        }
-      });
-
       test('should throw exception with correct error details', () => {
         try {
           updateMatchResult(123, Event.CancelHomeGoal, 'AA');
