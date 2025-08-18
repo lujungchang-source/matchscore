@@ -11,18 +11,18 @@ import { Budget } from './Budget';
 export class BudgetService {
   // Mock data for demonstration purposes
   private mockBudgets: Budget[] = [
-    { YearMonth: "202501", Amount: 15000 },
-    { YearMonth: "202502", Amount: 18000 },
-    { YearMonth: "202503", Amount: 22000 },
-    { YearMonth: "202504", Amount: 19500 },
-    { YearMonth: "202505", Amount: 21000 },
-    { YearMonth: "202506", Amount: 17500 },
-    { YearMonth: "202507", Amount: 23000 },
-    { YearMonth: "202508", Amount: 20000 },
-    { YearMonth: "202509", Amount: 18500 },
-    { YearMonth: "202510", Amount: 25000 },
-    { YearMonth: "202511", Amount: 19000 },
-    { YearMonth: "202512", Amount: 24000 },
+    new Budget("202501", 15000),
+    new Budget("202502", 18000),
+    new Budget("202503", 22000),
+    new Budget("202504", 19500),
+    new Budget("202505", 21000),
+    new Budget("202506", 17500),
+    new Budget("202507", 23000),
+    new Budget("202508", 20000),
+    new Budget("202509", 18500),
+    new Budget("202510", 25000),
+    new Budget("202511", 19000),
+    new Budget("202512", 24000),
   ];
 
   /**
@@ -84,9 +84,9 @@ export class BudgetService {
    */
   add(budget: Budget): Budget {
     try {
-      // Validate YearMonth format
-      if (!/^\d{6}$/.test(budget.YearMonth)) {
-        throw new Error(`Invalid YearMonth format: ${budget.YearMonth}. Expected format: YYYYMM`);
+      // Validate that it's a Budget instance
+      if (!Budget.isBudget(budget)) {
+        throw new Error('Invalid budget object provided');
       }
 
       // Check if budget for this YearMonth already exists
@@ -113,9 +113,9 @@ export class BudgetService {
    */
   update(budget: Budget): Budget {
     try {
-      // Validate YearMonth format
-      if (!/^\d{6}$/.test(budget.YearMonth)) {
-        throw new Error(`Invalid YearMonth format: ${budget.YearMonth}. Expected format: YYYYMM`);
+      // Validate that it's a Budget instance
+      if (!Budget.isBudget(budget)) {
+        throw new Error('Invalid budget object provided');
       }
 
       // Find existing budget

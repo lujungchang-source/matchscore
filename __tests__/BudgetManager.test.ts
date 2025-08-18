@@ -5,6 +5,7 @@
 import dayjs from 'dayjs';
 import { BudgetManager, budgetManager } from '../BudgetManager';
 import { budgetService } from '../BudgetService';
+import { Budget } from '../Budget';
 
 // Mock the BudgetService to control test data
 jest.mock('../BudgetService', () => ({
@@ -69,8 +70,8 @@ describe('BudgetManager with Day.js', () => {
 
         // Mock budget data - including months within and outside the range
         const mockBudgets = [
-          { YearMonth: "202507", Amount: 3100 }, // July 2025 - within range
-          { YearMonth: "202508", Amount: 310 }, // August 2025 - within range
+          new Budget("202507", 3100), // July 2025 - within range
+          new Budget("202508", 310), // August 2025 - within range
         ];
 
         mockBudgetService.getAll.mockReturnValue(mockBudgets);
