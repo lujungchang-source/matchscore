@@ -3,6 +3,8 @@
  * Represents a budget entry with year-month and amount
  */
 
+import dayjs, { Dayjs } from 'dayjs';
+
 /**
  * Budget class representing a single budget entry
  */
@@ -64,32 +66,35 @@ export class Budget {
   }
 
   /**
-   * Static factory method to create a Budget from a plain object
-   * @param obj - Plain object with YearMonth and Amount properties
-   * @returns Budget instance
+   * Get the first day of the budget month as a Day.js object
+   * @returns Day.js object representing the first day of the month
    */
-  static fromObject(obj: any): Budget {
-    if (!obj || typeof obj !== 'object') {
-      throw new Error('Object is required');
-    }
-    if (typeof obj.YearMonth !== 'string' || !/^\d{6}$/.test(obj.YearMonth)) {
-      throw new Error('YearMonth must be a string in YYYYMM format');
-    }
-    if (typeof obj.Amount !== 'number' || !Number.isInteger(obj.Amount)) {
-      throw new Error('Amount must be an integer');
-    }
-    return new Budget(obj.YearMonth, obj.Amount);
+  firstDay(): Dayjs {
+    return dayjs(this.YearMonth);
   }
 
   /**
-   * Converts the Budget instance to a plain object
-   * @returns Plain object representation of the Budget
+   * Get the last day of the budget month as a Day.js object
+   * @returns Day.js object representing the last day of the month
    */
-  toObject(): { YearMonth: string; Amount: number } {
-    return {
-      YearMonth: this.YearMonth,
-      Amount: this.Amount
-    };
+  lastDay(): Dayjs {
+    return this.firstDay().endOf('month');
+  }
+
+  /**
+   * Get the number of days in the budget month
+   * @returns Number of days in the budget month
+   */
+  daysOfBudget(): number {
+    return this.lastDay().diff(this.firstDay(), 'day') + 1;
+  }
+
+  /**
+   * Get the daily amount for this budget
+   * @returns Daily amount as a decimal value
+   */
+  dailyAmount(): number {
+    return this.Amount / this.daysOfBudget();
   }
 
   /**

@@ -9,6 +9,7 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { budgetService } from './BudgetService';
 import { Budget } from './Budget';
+import { Period } from './Period';
 
 // Extend dayjs with plugins
 dayjs.extend(quarterOfYear);
@@ -16,9 +17,14 @@ dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
 /**
+ * Represents a date period with start and end dates
+ */
+
+/**
  * Budget Manager class for handling budget calculations and queries
  */
 export class BudgetManager {
+
   /**
    * Query the total amount within a specified date range
    * @param start - The start date and time for the query range (using Day.js)
@@ -36,58 +42,24 @@ export class BudgetManager {
     
     try {
       // Get all budgets
-      const allBudgets = budgetService.getAll();
+      const budgets = budgetService.getAll();
       
       // Filter budgets within the date range and calculate prorated amounts
       let totalAmount = 0;
-      let budgetsProcessed = 0;
       
-      for (const budget of allBudgets) {
-        const budgetDate = this.parseYearMonth(budget.YearMonth);
-        const monthStart = budgetDate.startOf('month');
-        const monthEnd = budgetDate.endOf('month');
-        
-        // Check if this budget month overlaps with our date range
-        if (monthStart.isSameOrBefore(end, 'day') && monthEnd.isSameOrAfter(start, 'day')) {
-          // Calculate the actual date range for this month within our query range
-          const effectiveStart = start.isAfter(monthStart) ? start : monthStart;
-          const effectiveEnd = end.isBefore(monthEnd) ? end : monthEnd;
-          
-          // Calculate the number of days in this month that fall within our range
-          const daysInRange = effectiveEnd.diff(effectiveStart, 'day') + 1;
-          const daysInMonth = monthEnd.diff(monthStart, 'day') + 1;
-          
-          // Calculate prorated amount
-          const proratedAmount = (budget.Amount / daysInMonth) * daysInRange;
-          totalAmount += proratedAmount;
-          budgetsProcessed++;
-          
-          console.log(`Month ${budget.YearMonth}: ${daysInRange}/${daysInMonth} days, prorated amount: ${proratedAmount.toFixed(2)}`);
-        }
+      for (const budget of budgets) {
+        const period = new Period(start, end);
+        //const anotherPeriod = new Period(budget.firstDay(), budget.lastDay());
+        const daysInRange = period.overlappingDays(budget);
+        // Calculate prorated amount
+        totalAmount += budget.dailyAmount() * daysInRange;
       }
       
-      console.log(`Found ${budgetsProcessed} budgets in date range, total amount: ${totalAmount.toFixed(2)}`);
       return totalAmount;
     } catch (error) {
       console.error('Error querying total amount:', error);
       throw error;
     }
-  }
-
-  /**
-   * Parse YearMonth string to Day.js object
-   * @param yearMonth - YearMonth string in format YYYYMM
-   * @returns Day.js object representing the first day of the month
-   */
-  private parseYearMonth(yearMonth: string): Dayjs {
-    if (!/^\d{6}$/.test(yearMonth)) {
-      throw new Error(`Invalid YearMonth format: ${yearMonth}. Expected format: YYYYMM`);
-    }
-    
-    const year = yearMonth.substring(0, 4);
-    const month = yearMonth.substring(4, 6);
-    
-    return dayjs(`${year}-${month}-01`);
   }
 
   /**
