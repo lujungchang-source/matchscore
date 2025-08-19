@@ -45,16 +45,9 @@ export class BudgetManager {
       const budgets = budgetService.getAll();
       
       // Filter budgets within the date range and calculate prorated amounts
-      let totalAmount = 0;
-      
-      for (const budget of budgets) {
-        const period = new Period(start, end);
-        //const anotherPeriod = new Period(budget.firstDay(), budget.lastDay());
-        const daysInRange = period.overlappingDays(budget);
-        // Calculate prorated amount
-        totalAmount += budget.dailyAmount() * daysInRange;
-      }
-      
+      const totalAmount = budgets
+        .map(budget => budget.overlappingAmount(new Period(start, end)))
+        .reduce((sum, amount) => sum + amount, 0);
       return totalAmount;
     } catch (error) {
       console.error('Error querying total amount:', error);

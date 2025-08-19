@@ -9,6 +9,21 @@ import dayjs, { Dayjs } from 'dayjs';
  * Budget class representing a single budget entry
  */
 export class Budget {
+  /**
+   * Calculate the overlapping amount for this budget and a given period
+   * @param period - The period to compare
+   * @returns The overlapping amount as a decimal value
+   */
+  overlappingAmount(period: import('./Period').Period): number {
+    return this.dailyAmount() * period.overlappingDays(this.createPeriod());
+  }
+  /**
+   * Create a Period instance for this budget's date range
+   * @returns Period instance for the budget's date range
+   */
+  private createPeriod(): import('./Period').Period {
+    return new (require('./Period').Period)(this.firstDay(), this.lastDay());
+  }
   private _yearMonth!: string;
   private _amount!: number;
 
@@ -69,7 +84,7 @@ export class Budget {
    * Get the first day of the budget month as a Day.js object
    * @returns Day.js object representing the first day of the month
    */
-  firstDay(): Dayjs {
+  private firstDay(): Dayjs {
     return dayjs(this.YearMonth);
   }
 
@@ -77,7 +92,7 @@ export class Budget {
    * Get the last day of the budget month as a Day.js object
    * @returns Day.js object representing the last day of the month
    */
-  lastDay(): Dayjs {
+  private lastDay(): Dayjs {
     return this.firstDay().endOf('month');
   }
 
@@ -85,7 +100,7 @@ export class Budget {
    * Get the number of days in the budget month
    * @returns Number of days in the budget month
    */
-  daysOfBudget(): number {
+  private daysOfBudget(): number {
     return this.lastDay().diff(this.firstDay(), 'day') + 1;
   }
 
